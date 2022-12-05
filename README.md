@@ -14,7 +14,7 @@ Gepetto is a Python script which uses OpenAI's ChatGPT to provide meaning to fun
 At the moment, it can ask ChatGPT to explain what a function does, and to automatically rename its variables.
 Here is a simple example of what results it can provide in mere seconds:
 
-![](https://github.com/JusticeRage/Gepetto/blob/main/readme/comparison.png?raw=true)
+![](./readme/comparison.png?raw=true)
 
 ## Setup
 
@@ -37,7 +37,7 @@ Please note that ChatGPT queries are not free (although not very expensive) and 
 Once the plugin is installed properly, you should be able to invoke it from the context menu of IDA's pseudocode window,
 as shown in the screenshot below:
 
-![](https://github.com/JusticeRage/Gepetto/blob/main/readme/usage.png?raw=true)
+![](./readme/usage.png?raw=true)
 
 You can also use the following hotkeys:
 
