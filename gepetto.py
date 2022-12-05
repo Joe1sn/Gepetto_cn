@@ -62,7 +62,7 @@ class GepettoPlugin(idaapi.plugin_t):
         # Finding Vlun action
         findvlun_action = idaapi.action_desc_t(self.findvlun_action_name,
                                              'Find vlun',
-                                             RenameHandler(),
+                                             Findvlunhandler(),
                                              "Ctrl+Alt+T",
                                              "Use ChatGPT to find vlun in this function's variables",
                                              199)
@@ -206,14 +206,10 @@ class Findvlunhandler(idaapi.action_handler_t):
         idaapi.action_handler_t.__init__(self)
 
     def activate(self, ctx):
+        print("[*]finding vlun")
         decompiler_output = ida_hexrays.decompile(idaapi.get_screen_ea())
         v = ida_hexrays.get_widget_vdui(ctx.widget)
-        '''
-        query_chatgpt_async("Can you explain what the following C function does and suggest a better name for it?\n"
-                            + str(decompiler_output),
-                            functools.partial(comment_callback, address=idaapi.get_screen_ea(), view=v))
-        '''
-        query_chatgpt_async("您能否找出以下 C 函数的漏洞？\n"
+        query_chatgpt_async("这段 C 代码有漏洞吗？\n"
                     + str(decompiler_output),
                     functools.partial(comment_callback, address=idaapi.get_screen_ea(), view=v))
         return 1

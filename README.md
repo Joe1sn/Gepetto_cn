@@ -6,15 +6,20 @@ fork自大佬的项目
 
 - 添加自动寻找漏洞功能
 
-【注】由于流量太大，目前只有 将代码解释改为中文 测试过
-
 # Gepetto
 
 Gepetto is a Python script which uses OpenAI's ChatGPT to provide meaning to functions decompiled by IDA Pro.
 At the moment, it can ask ChatGPT to explain what a function does, and to automatically rename its variables.
 Here is a simple example of what results it can provide in mere seconds:
 
+1. 解释程序
+
 ![](./readme/comparison.png?raw=true)
+
+2. 找到漏洞
+
+![](./readme/findvlun.png)
+
 
 ## Setup
 
