@@ -21,8 +21,13 @@ class GepettoPlugin(idaapi.plugin_t):
     flags = 0
     explain_action_name = "gepetto:explain_function"
     explain_menu_path = "Edit/Gepetto/Explain function"
+
     rename_action_name = "gepetto:rename_function"
     rename_menu_path = "Edit/Gepetto/Rename variables"
+
+    findvlun_action_name = "gepetto:findvlun_function"
+    findvlun_menu_path = "Edit/Gepetto/Find vlunerbale"
+
     wanted_name = 'Gepetto'
     wanted_hotkey = ''
     comment = "Uses ChatGPT to enrich the decompiler's output"
@@ -54,6 +59,16 @@ class GepettoPlugin(idaapi.plugin_t):
         idaapi.register_action(rename_action)
         idaapi.attach_action_to_menu(self.rename_menu_path, self.rename_action_name, idaapi.SETMENU_APP)
 
+        # Finding Vlun action
+        findvlun_action = idaapi.action_desc_t(self.findvlun_action_name,
+                                             'Find vlun',
+                                             RenameHandler(),
+                                             "Ctrl+Alt+T",
+                                             "Use ChatGPT to find vlun in this function's variables",
+                                             199)
+        idaapi.register_action(findvlun_action)
+        idaapi.attach_action_to_menu(self.findvlun_menu_path, self.findvlun_action_name, idaapi.SETMENU_APP)
+
         # Register context menu actions
         self.menu = ContextMenuHooks()
         self.menu.hook()
@@ -66,6 +81,7 @@ class GepettoPlugin(idaapi.plugin_t):
     def term(self):
         idaapi.detach_action_from_menu(self.explain_menu_path, self.explain_action_name)
         idaapi.detach_action_from_menu(self.explain_menu_path, self.rename_action_name)
+        idaapi.detach_action_from_menu(self.explain_menu_path, self.findvlun_action_name)
         if self.menu:
             self.menu.unhook()
         return
@@ -78,6 +94,7 @@ class ContextMenuHooks(idaapi.UI_Hooks):
         if idaapi.get_widget_type(form) == idaapi.BWN_PSEUDOCODE or idaapi.get_widget_type(form) == idaapi.BWN_DISASM:
             idaapi.attach_action_to_popup(form, popup, GepettoPlugin.explain_action_name, "Gepetto/")
             idaapi.attach_action_to_popup(form, popup, GepettoPlugin.rename_action_name, "Gepetto/")
+            idaapi.attach_action_to_popup(form, popup, GepettoPlugin.findvlun_action_name, "Gepetto/")
 
 # -----------------------------------------------------------------------------
 
@@ -112,9 +129,14 @@ class ExplainHandler(idaapi.action_handler_t):
     def activate(self, ctx):
         decompiler_output = ida_hexrays.decompile(idaapi.get_screen_ea())
         v = ida_hexrays.get_widget_vdui(ctx.widget)
+        '''
         query_chatgpt_async("Can you explain what the following C function does and suggest a better name for it?\n"
                             + str(decompiler_output),
                             functools.partial(comment_callback, address=idaapi.get_screen_ea(), view=v))
+        '''
+        query_chatgpt_async("您能否解释以下 C 函数的作用并建议一个更好的名称？\n"
+                    + str(decompiler_output),
+                    functools.partial(comment_callback, address=idaapi.get_screen_ea(), view=v))
         return 1
 
     # This action is always available.
@@ -171,6 +193,36 @@ class RenameHandler(idaapi.action_handler_t):
     # This action is always available.
     def update(self, ctx):
         return idaapi.AST_ENABLE_ALWAYS
+
+# -----------------------------------------------------------------------------
+
+class Findvlunhandler(idaapi.action_handler_t):
+    """
+    This handler is tasked with querying ChatGPT to find vlunerable in current page's code. 
+    Once the reply is received, it is added as a function
+    comment.
+    """
+    def __init__(self):
+        idaapi.action_handler_t.__init__(self)
+
+    def activate(self, ctx):
+        decompiler_output = ida_hexrays.decompile(idaapi.get_screen_ea())
+        v = ida_hexrays.get_widget_vdui(ctx.widget)
+        '''
+        query_chatgpt_async("Can you explain what the following C function does and suggest a better name for it?\n"
+                            + str(decompiler_output),
+                            functools.partial(comment_callback, address=idaapi.get_screen_ea(), view=v))
+        '''
+        query_chatgpt_async("您能否找出以下 C 函数的漏洞？\n"
+                    + str(decompiler_output),
+                    functools.partial(comment_callback, address=idaapi.get_screen_ea(), view=v))
+        return 1
+
+    # This action is always available.
+    def update(self, ctx):
+        return idaapi.AST_ENABLE_ALWAYS    
+
+    pass
 
 # =============================================================================
 # ChatGPT interaction

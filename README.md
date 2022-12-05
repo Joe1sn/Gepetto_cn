@@ -1,3 +1,13 @@
+#  说明
+
+fork自大佬的项目
+
+- 将代码解释改为中文
+
+- 添加自动寻找漏洞功能
+
+【注】由于流量太大，目前只有 将代码解释改为中文 测试过
+
 # Gepetto
 
 Gepetto is a Python script which uses OpenAI's ChatGPT to provide meaning to functions decompiled by IDA Pro.
@@ -33,6 +43,7 @@ You can also use the following hotkeys:
 
 - Ask ChatGPT to explain the function: `Ctrl` + `Alt` + `H`
 - Request better names for the function's variables: `Ctrl` + `Alt` + `R`
+- 自动寻找当前代码漏洞: `Ctrl` + `Alt` + `T`
 
 Initial testing shows that asking for better names works better if you ask for an explanation of the function first – I
 assume because ChatGPT then uses its own comment to make more accurate suggestions.
